@@ -40,6 +40,9 @@ public class HomeKeyService extends AccessibilityService {
     private int[] settingsScancodes = new int[0];
     private int[] settingsKeycodes = new int[0];
     private boolean settingsPanel;
+    /** Remote buttons that open the Wi-Fi panel (config.xml, wifi_key_scancodes and wifi_key_keycodes). */
+    private int[] wifiScancodes = new int[0];
+    private int[] wifiKeycodes = new int[0];
     /** app_keys, the same maps InputKeyService reads, for setups that run only this service. */
     private Map<Integer, String> appKeys = Collections.emptyMap();
     private Map<Integer, String> appScancodes = Collections.emptyMap();
@@ -55,6 +58,8 @@ public class HomeKeyService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         settingsScancodes = getResources().getIntArray(R.array.settings_key_scancodes);
+        wifiScancodes = getResources().getIntArray(R.array.wifi_key_scancodes);
+        wifiKeycodes = getResources().getIntArray(R.array.wifi_key_keycodes);
         // The service is directBootAware: Android 11 skips a service that is not while the user is still
         // locked at boot, writes accessibility_enabled=0 and, on TCL G03 firmware, never binds it after the
         // unlock. Config.load reads credential-protected storage, so wait for the unlock before reading it.
@@ -126,6 +131,12 @@ public class HomeKeyService extends AccessibilityService {
         return false;
     }
 
+    private boolean isWifiKey(KeyEvent event) {
+        for (int code : wifiScancodes) if (event.getScanCode() == code) return true;
+        for (int code : wifiKeycodes) if (event.getKeyCode() == code) return true;
+        return false;
+    }
+
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         // A scancode entry is more specific than any keycode, so it goes first.
@@ -138,6 +149,17 @@ public class HomeKeyService extends AccessibilityService {
                         : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
                 try {
                     startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (ActivityNotFoundException | SecurityException unavailable) {
+                    Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+                }
+            }
+            return true;
+        }
+        // The Wi-Fi panel over whatever is playing (wifi_key_keycodes, wifi_key_scancodes).
+        if (isWifiKey(event)) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                try {
+                    startActivity(WifiPanelActivity.intent(this).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 } catch (ActivityNotFoundException | SecurityException unavailable) {
                     Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
                 }

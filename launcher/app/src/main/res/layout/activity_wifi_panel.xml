@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Wi-Fi pill's panel (wifi_panel): the Inputs dropdown's glass panel, hung under the pill by
+     WifiPanelActivity. The password box replaces the rows while a WPA network's password is typed. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrim"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/panel"
+        android:layout_width="wrap_content"
+        android:minWidth="260dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="105dp"
+        android:layout_marginEnd="180dp"
+        android:orientation="vertical"
+        android:background="@drawable/glass_panel"
+        android:padding="6dp"
+        android:elevation="12dp">
+
+        <LinearLayout
+            android:id="@+id/rows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <LinearLayout
+            android:id="@+id/passwordBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/passwordTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textSize="15sp"
+                android:fontFamily="@string/font_medium"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginTop="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:background="@drawable/input_row_bg"
+                android:hint="@string/wifi_password_hint"
+                android:textColorHint="#80FFFFFF"
+                android:textColor="#FFFFFFFF"
+                android:textSize="15sp"
+                android:fontFamily="@string/font_body"
+                android:inputType="textPassword"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:singleLine="true" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

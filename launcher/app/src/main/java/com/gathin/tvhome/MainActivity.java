@@ -605,7 +605,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnClickListener(v -> {
             if (launcherSettingsButton) startActivityForResult(
                     new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
-            else open(systemIntent(Settings.ACTION_SETTINGS));
+            else open(settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
+                    : systemIntent(Settings.ACTION_SETTINGS));
+        });
+        btnSettings.setOnLongClickListener(v -> {
+            open(systemIntent(Settings.ACTION_SETTINGS));
+            return true;
         });
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
@@ -2522,11 +2527,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return 0xFF000000 | (r << 16) | (g << 8) | b;
     }
 
-    /** The network pill opens the VPN app when one is configured and installed, otherwise Wi-Fi settings. */
+    /** The network pill opens the VPN app when one is configured and installed, otherwise the Wi-Fi panel
+     *  (wifi_panel, Android 9 and older) or Wi-Fi settings. */
     private void openNetworkPill() {
         Intent i = vpnApp.isEmpty() ? null : getPackageManager().getLeanbackLaunchIntentForPackage(vpnApp);
         if (i == null && !vpnApp.isEmpty()) i = getPackageManager().getLaunchIntentForPackage(vpnApp);
-        open(i != null ? i : systemIntent(Settings.ACTION_WIFI_SETTINGS));
+        if (i == null) {
+            i = WifiPanelActivity.intent(this);
+            int[] at = new int[2];
+            btnWifi.getLocationOnScreen(at);
+            i.putExtra(WifiPanelActivity.EXTRA_RIGHT, at[0] + btnWifi.getWidth())
+                    .putExtra(WifiPanelActivity.EXTRA_BOTTOM, at[1] + btnWifi.getHeight());
+        }
+        open(i);
     }
 
 

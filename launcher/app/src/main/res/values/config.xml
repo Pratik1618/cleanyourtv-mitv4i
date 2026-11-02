@@ -17,10 +17,10 @@
 
     <!-- Apps pinned to the dock row at the bottom, in this order. Missing apps are skipped. -->
     <string-array name="dock_apps">
-        <item>com.netflix.ninja</item>
-        <item>com.amazon.amazonvideo.livingroom</item>
         <item>com.google.android.youtube.tv</item>
         <item>in.startv.hotstar</item>
+        <item>com.amazon.amazonvideo.livingroom</item>
+        <item>com.sonyliv</item>
     </string-array>
     <!-- With fewer dock_apps than columns (or a dock app that is not installed), the free dock slots take
          the first grid apps, so the dock never shows a gap. false leaves them empty (#162); a theme can
@@ -29,12 +29,12 @@
 
     <!-- Apps never shown as tiles (e.g. the Live TV app, which the Inputs menu already covers). -->
     <string-array name="hidden_apps">
-        <item>com.mediatek.wwtv.tvcenter</item>
+        <item>com.android.tv</item>
         <item>com.mitv.gallery</item>
     </string-array>
 
     <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. Leave empty to omit. -->
-    <string name="live_tv_package" translatable="false">com.mediatek.wwtv.tvcenter</string>
+    <string name="live_tv_package" translatable="false">com.android.tv</string>
 
     <!-- Open the Live TV app above the first time Home comes up after the TV is switched on, for sets that are
          mostly used for broadcast TV. Once per boot: Home after that stays Home. Can also be set with
@@ -128,8 +128,22 @@
     </integer-array>
     <!-- What those Settings buttons open: false, the TV's Settings; true, a small glass panel at the top right
          with TV settings, Display, Network, Apps (re-enable an app) and Launcher settings, over whatever is on screen.
-         Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
-    <bool name="settings_key_panel">false</bool>
+         Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). The on-screen
+         Settings pill follows it too; a long press on the pill still opens the TV's Settings. -->
+    <bool name="settings_key_panel">true</bool>
+    <!-- The Wi-Fi pill opens a glass panel (WifiPanelActivity): the network in use, nearby networks to join, and
+         All Wi-Fi settings. Android 9 and older only; needs location mode on to list nearby networks. A long press
+         on the pill still opens the TV's Wi-Fi settings. -->
+    <bool name="wifi_panel">true</bool>
+    <!-- Remote buttons that open that Wi-Fi panel over whatever is playing, through HomeKeyService (install with
+         -HomeKeyService); the key no longer reaches apps. Same rules as settings_key_scancodes and
+         settings_key_keycodes above. Empty: no button. 189 is BUTTON_2, which Xiaomi's key layout makes of the
+         remote's ≡ button (PatchWall's key, unused by apps); check `logcat | grep interceptKey` while pressing. -->
+    <integer-array name="wifi_key_scancodes">
+    </integer-array>
+    <integer-array name="wifi_key_keycodes">
+        <item>189</item>
+    </integer-array>
 
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
